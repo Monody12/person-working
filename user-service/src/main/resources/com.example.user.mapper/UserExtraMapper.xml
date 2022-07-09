@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.user.mapper.UserExtraMapper">
+    <insert id="insert" parameterType="com.example.user.entity.UserExtra">
+        insert into user_extra (username, email, image, create_time)
+        values (#{username}, #{email}, #{image}, #{createTime})
+    </insert>
+
+    <select id="query" parameterType="com.example.user.entity.UserExtra" resultType="com.example.user.entity.UserExtra">
+        select *
+        from user_extra
+        where username = #{username} lock in share mode
+    </select>
+
+    <update id="update" parameterType="com.example.user.entity.UserExtra">
+        update user_extra
+        <set>
+            <if test="message!=null">
+                message = #{message},
+            </if>
+            <if test="email!=null">
+                email = #{email},
+            </if>
+            <if test="image!=null">
+                `image` = #{image},
+            </if>
+        </set>
+        where username = #{username}
+    </update>
+
+    <select id="countEmail" parameterType="com.example.user.entity.UserExtra" resultType="java.lang.Integer">
+        select count(*) from user_extra where email = #{email}
+    </select>
+</mapper>

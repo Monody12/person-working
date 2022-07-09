@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!--禁用缓存-->
+<!--    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>-->
+<!--    <meta http-equiv="Pragma" content="no-cache"/>-->
+<!--    <meta http-equiv="Expires" content="0"/>-->
+    <title>文件上传</title>
+    <link rel="stylesheet" type="text/css" href="css/elementUI.css"/>
+    <script src="js/vue.js" type="text/javascript" charset="utf-8"></script>
+    <script src="js/axios.min.js" type="text/javascript"></script>
+    <script src="js/elementUI.js" type="text/javascript"></script>
+</head>
+<body>
+<div id="app">
+    <el-upload
+            class="upload-demo"
+            drag
+            action="./file/upload"
+            :data="page_path"
+            :on-preview="handlePreview"
+            :on-remove="handleRemove"
+            :file-list="fileList"
+            list-type="picture"
+            multiple>
+        <i class="el-icon-upload"></i>
+        <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+        <div class="el-upload__tip" slot="tip">当前登录用户：{{page_path.username}}</div>
+        <div class="el-upload__tip" slot="tip">上传至文件夹：{{page_path.path}}</div>
+    </el-upload>
+</div>
+</body>
+<script>
+    new Vue({
+        //作用域
+        el: '#app',
+        //初始化数据
+        data: {
+            title: 'HelloWorld',
+            radio: '1',
+            input: undefined,
+            fileList: undefined,
+            page_path: {
+                username: 'test',
+                path: '/'
+            }
+        },
+        // 初始化用户信息
+        created: function () {
+            this.page_path.username = localStorage.getItem("username")
+            this.page_path.path = localStorage.getItem("folderPath")
+
+        },
+        //函数写在这里
+        methods: {
+            f1() {
+                var params = new URLSearchParams()
+                params.append("username", "test")
+                params.append("password", "test")
+                axios.post('http://localhost:10010/userservice/login', params).then(res => {
+                    var info = res.data
+                    console.log(info)
+                })
+            },
+            handlePreview(file) {
+                console.log(file)
+                window.open(file.url, '_blank')
+            },
+            handleRemove(file, fileList) {
+                console.log(file, fileList)
+                console.log("选中文件的id为：", file.response.msg)
+                this.$confirm('是否同时删除文件？', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    var params = new URLSearchParams()
+                    params.append("username", this.page_path.username)
+                    params.append("fileId", file.response.msg)
+                    axios.post('/netdisk/file/delete', params).then(res => {
+                        var info = res.data.code
+                        if (info === 200) {
+                            this.$message({
+                                type: 'success',
+                                message: '删除成功!'
+                            });
+                        } else {
+                            this.$message({
+                                type: 'error',
+                                message: res.data.msg
+                            });
+                        }
+                    })
+
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '仅从列表中移除'
+                    });
+                });
+            }
+
+        }
+    })
+</script>
+</html>

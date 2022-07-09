@@ -1,0 +1,103 @@
+server:
+  port: 8002
+  servlet:
+    context-path: /netdisk
+spring:
+  main:
+    allow-bean-definition-overriding: true
+
+  cloud:
+    nacos:
+      server-addr: 192.144.232.94:8848
+      discovery:
+        service: netdisk
+        cluster-name: localhost集群
+  data:
+    mongodb:
+      #uri连接
+      uri: mongodb://netdisk:myaskhfas4541ds9897djlakfd4dfhfdshin123@localhost:27017/netdisk
+
+  datasource:
+    url: jdbc:mysql://192.144.232.94:3306/person_working_netdisk?useAffectedRows=true&useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=GMT%2B8
+    username: person_working_netdisk
+    password: ksdhfoihsdgdsgf34DHSGBJasf45
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  devtools:
+    restart:
+      enabled: false
+  rabbitmq:
+    host: 192.144.232.94
+    port: 5672
+    username: rabbitmq_admin
+    password: hjasioh444I$HDnksdn^*(5HF5DI
+
+
+
+  jackson:
+    serialization:
+      FAIL_ON_EMPTY_BEANS: false
+mybatis:
+  type-aliases-package: com.example.netdisk.entity
+  configuration:
+    map-underscore-to-camel-case: true
+  mapper-locations: classpath:com.example.netdisk.mapper/*.xml
+  check-config-location: true
+
+pagehelper:
+  helper-dialect: mysql
+  reasonable: true
+  support-methods-arguments: true
+  params: count=countSql
+
+logging:
+  level:
+    javax.management: info
+    sun.net.www: info
+    sun.rmi: info
+    org.apache.tomcat.util.net.NioEndpoint: info
+    com.example.netdisk: trace
+    org.mongodb.driver: info
+    #    org.mongodb.driver: trace
+    root: info
+
+
+swagger:
+  production: false
+  basic:
+    enable: true
+    username: admin
+    password: 123
+
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 10000
+        readTimeout: 600000
+
+netdisk:
+  message:
+    # 用户分享文件用的topic主题交换机，用于分发到不同TTL的队列中
+    share-file-exchange: share_file_exchange
+    # 用户分享文件的延迟队列，分别代表有效期：1天、3天、7天、30天
+    share-file-delay-queue: share_file_queue_
+    share-file-delay-queue-1: share_file_queue_1
+    share-file-delay-queue-3: share_file_queue_3
+    share-file-delay-queue-7: share_file_queue_7
+    share-file-delay-queue-30: share_file_queue_30
+    # 用户分享文件用的死信队列，当消息过期时，删除无效的用户分享文件信息
+    share-file-exchange-dlx: share_file_exchange_dlx
+    # 路由键
+    share-file-routing-key: share_file.
+
+  upload:
+    # 大文件阈值 30MB
+    big-size: 31457280
+    storage-root: C:\\upload
+
+userservice:
+  ribbon:
+    NFLoadBalancerRuleClassName: com.alibaba.cloud.nacos.ribbon.NacosRule
+
+

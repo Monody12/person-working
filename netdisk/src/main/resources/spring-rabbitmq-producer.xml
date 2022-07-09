@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:rabbit="http://www.springframework.org/schema/rabbit"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       https://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/rabbit
+       http://www.springframework.org/schema/rabbit/spring-rabbit.xsd">
+
+    <!--
+        死信队列：
+            1. 声明正常的队列(test_queue_dlx)和交换机(test_exchange_dlx)
+            2. 声明死信队列(queue_dlx)和死信交换机(exchange_dlx)
+            3. 正常队列绑定死信交换机
+                设置两个参数：
+                    * x-dead-letter-exchange：死信交换机名称
+                    * x-dead-letter-routing-key：发送给死信交换机的routingkey
+    -->
+
+
+    <!--
+        延迟队列：
+            1. 定义正常交换机（order_exchange）和队列(order_queue)
+            2. 定义死信交换机（order_exchange_dlx）和队列(order_queue_dlx)
+            3. 绑定，设置正常队列过期时间为30分钟
+    -->
+    <!-- 1. 定义正常交换机（order_exchange）和队列(order_queue)-->
+    <!--设置四个不同TTL的交换机-->
+    <!--测试用零号队列，TTL为10秒 -->
+    <rabbit:queue id="share_file_queue_0" name="share_file_queue_0">
+        <rabbit:queue-arguments>
+            <entry key="x-dead-letter-exchange" value="share_file_exchange_dlx" />
+            <entry key="x-dead-letter-routing-key" value="dlx.share.delete" />
+            <entry key="x-message-ttl" value="10000" value-type="java.lang.Long" />
+        </rabbit:queue-arguments>
+    </rabbit:queue>
+
+    <rabbit:queue id="share_file_queue_1" name="share_file_queue_1">
+        <rabbit:queue-arguments>
+            <entry key="x-dead-letter-exchange" value="share_file_exchange_dlx" />
+            <entry key="x-dead-letter-routing-key" value="dlx.share.delete" />
+            <entry key="x-message-ttl" value="86400000" value-type="java.lang.Long" />
+        </rabbit:queue-arguments>
+    </rabbit:queue>
+    <rabbit:queue id="share_file_queue_3" name="share_file_queue_3">
+        <rabbit:queue-arguments>
+            <entry key="x-dead-letter-exchange" value="share_file_exchange_dlx" />
+            <entry key="x-dead-letter-routing-key" value="dlx.share.delete" />
+            <entry key="x-message-ttl" value="259200000" value-type="java.lang.Long" />
+        </rabbit:queue-arguments>
+    </rabbit:queue>
+    <rabbit:queue id="share_file_queue_7" name="share_file_queue_7">
+        <rabbit:queue-arguments>
+            <entry key="x-dead-letter-exchange" value="share_file_exchange_dlx" />
+            <entry key="x-dead-letter-routing-key" value="dlx.share.delete" />
+            <entry key="x-message-ttl" value="604800000" value-type="java.lang.Long" />
+        </rabbit:queue-arguments>
+    </rabbit:queue>
+    <rabbit:queue id="share_file_queue_30" name="share_file_queue_30">
+        <rabbit:queue-arguments>
+            <entry key="x-dead-letter-exchange" value="share_file_exchange_dlx" />
+            <entry key="x-dead-letter-routing-key" value="dlx.share.delete" />
+            <entry key="x-message-ttl" value="2592000000" value-type="java.lang.Long" />
+        </rabbit:queue-arguments>
+    </rabbit:queue>
+    <rabbit:topic-exchange id="share_file_exchange" name="share_file_exchange">
+        <rabbit:bindings>
+            <rabbit:binding pattern="share_file.0" queue="share_file_queue_0"/>
+            <rabbit:binding pattern="share_file.1" queue="share_file_queue_1"/>
+            <rabbit:binding pattern="share_file.3" queue="share_file_queue_3"/>
+            <rabbit:binding pattern="share_file.7" queue="share_file_queue_7"/>
+            <rabbit:binding pattern="share_file.30" queue="share_file_queue_30"/>
+        </rabbit:bindings>
+    </rabbit:topic-exchange>
+
+    <!--  2. 定义死信交换机（order_exchange_dlx）和队列(order_queue_dlx)-->
+    <rabbit:queue id="share_file_queue_dlx" name="share_file_queue_dlx"/>
+    <rabbit:topic-exchange name="share_file_exchange_dlx">
+        <rabbit:bindings>
+            <rabbit:binding pattern="dlx.share.#" queue="share_file_queue_dlx"/>
+        </rabbit:bindings>
+    </rabbit:topic-exchange>
+
+
+
+</beans>

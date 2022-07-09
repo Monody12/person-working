@@ -1,0 +1,61 @@
+server:
+  port: 8001
+  servlet:
+    context-path: /userservice
+spring:
+  main:
+    allow-bean-definition-overriding: true
+  cloud:
+    nacos:
+      server-addr: 192.144.232.94:8848
+      discovery:
+        service: userservice
+        cluster-name: localhost集群
+  devtools:
+    restart:
+      enabled: false
+
+  jackson:
+    serialization:
+      FAIL_ON_EMPTY_BEANS: false
+  datasource:
+    url: jdbc:mysql://192.144.232.94:3306/person_working_user?useAffectedRows=true&useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=GMT%2B8
+    username: person_working_user
+    password: ksdhfoihi84fsd4GUJDHSGBJasf45
+    driver-class-name: com.mysql.cj.jdbc.Driver
+mybatis:
+  type-aliases-package: com.example.user.entity
+  configuration:
+    map-underscore-to-camel-case: true
+  mapper-locations: classpath:com.example.user.mapper/*.xml
+logging:
+  level:
+    com.example.user: trace
+    root: info
+
+
+mail:
+  smtp:
+    host: smtp.qq.com
+    auth: true
+  sender:
+    mailbox:
+      account: person-working@qq.com
+      nickname: Person Working 用户服务
+      secret: czghbgzdigtccifj
+  verification-code:
+#    template: 尊敬的 %s (%s) 您好，欢迎使用Person Working个人网盘服务。您的验证码是 %d ，请在 %d 分钟内完成账户验证。如不是您本人操作请忽略，谢谢。
+    template: 尊敬的 %s (%s) 本次服务验证码是 %d 。请在 %d 分钟内完成验证。
+    timeout: 10
+
+swagger:
+  production: false
+  basic:
+    enable: true
+    username: admin
+    password: 123
+
+
+userservice:
+  default-user-image: https://s2.loli.net/2022/04/23/5VzqlWpkevLfdiQ.png
+  token-prefix: user-token-

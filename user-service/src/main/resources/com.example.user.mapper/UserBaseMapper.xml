@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.user.mapper.UserBaseMapper">
+    <insert id="insert" parameterType="com.example.user.entity.UserBase">
+        insert into user_base (username, nickname, password, level)
+        values (#{username}, #{nickname}, #{password}, 1);
+    </insert>
+
+    <select id="query" parameterType="java.lang.String" resultType="com.example.user.entity.UserBase">
+        select *
+        from user_base
+        where username = #{username} lock in share mode
+    </select>
+
+    <update id="update" parameterType="com.example.user.entity.UserBase">
+        update user_base
+        <set>
+            <if test="nickname!=null">
+                nickname = #{nickname},
+            </if>
+            <if test="password!=null">
+                nickname = #{password},
+            </if>
+            <if test="level!=null">
+                `level` = #{level},
+            </if>
+        </set>
+        where username = #{username}
+    </update>
+
+    <select id="countUsername" parameterType="java.lang.String" resultType="java.lang.Integer">
+        select count(*)
+        from user_base
+        where username = #{username}
+    </select>
+
+    <delete id="delete" parameterType="java.lang.String">
+        delete
+        from user_base
+        where username = #{username}
+    </delete>
+
+    <select id="queryFull" parameterType="java.lang.String" resultType="com.example.user.entity.User">
+        select *
+        from user_base ub,
+             user_extra ue
+        where ub.username = #{username}
+          and ue.username = #{username} lock in share mode
+    </select>
+
+</mapper>

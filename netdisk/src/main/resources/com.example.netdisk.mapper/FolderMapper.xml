@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.netdisk.mapper.FolderMapper">
+    <insert id="insert" parameterType="com.example.netdisk.entity.Folder">
+        insert into folder (id, username, `name`, detail, `path`, update_time, expire_time, logic)
+        values (#{id}, #{username}, #{name}, #{detail}, #{path}, now(), null, 1);
+    </insert>
+    <insert id="insertMany" parameterType="java.util.List">
+        insert into folder (id, username, name, detail, type,path, update_time, expire_time, logic) values
+        <foreach collection="list" item="folder" index="index" separator=",">
+            (#{folder.id},#{folder.username},#{folder.name},#{folder.detail},#{folder.type},#{file.path},now(),null,1)
+        </foreach>
+    </insert>
+    <update id="update" parameterType="com.example.netdisk.entity.Folder">
+        <if test="id!=null">
+            update folder
+            <set>
+                <if test="name!=null and name!= ''">
+                    name = #{name},
+                </if>
+                <if test="detail!=null and detail!= ''">
+                    detail = #{detail},
+                </if>
+                <if test="type!=null and type!= ''">
+                    `type` = #{type},
+                </if>
+                <if test="path!=null and path!= ''">
+                    `path` = #{path},
+                </if>
+                <if test="expireTime!=null and expireTime!= ''">
+                    expire_time = #{expireTime},
+                </if>
+                <if test="logic!=null and logic!= ''">
+                    logic = #{logic},
+                </if>
+                update_time = now()
+            </set>
+            where id = #{id}
+        </if>
+    </update>
+    <update id="updateMany" parameterType="com.example.netdisk.entity.dto.BatchOperation">
+        update folder
+        set ${setColumn} = #{value},
+        update_time = now()
+        where username = #{username}
+        and
+        <if test="list!=null and list.size()>0">
+            ${whereColumn} in
+            <foreach collection="list" item="id" index="index" open="(" close=")" separator="," nullable="false">
+                #{id}
+            </foreach>
+        </if>
+        <if test="list==null or list.size()==0">
+            0
+        </if>
+    </update>
+
+    <delete id="delete" parameterType="com.example.netdisk.entity.Folder">
+        delete
+        from folder
+        where `id` = #{folderId} where username = #{username}
+    </delete>
+    <delete id="deleteMany" parameterType="com.example.netdisk.entity.dto.BatchOperation">
+        delete from folder where username = #{username} and `id` in
+        <foreach collection="list" item="id" index="index" open="(" close=")" separator="," nullable="false">
+            ${id}
+        </foreach>
+    </delete>
+    <select id="selectOne" resultType="com.example.netdisk.entity.Folder">
+        select *
+        from folder
+        where id = #{folderId}
+          and username = #{username}
+    </select>
+    <select id="selectMany" parameterType="com.example.netdisk.entity.dto.BatchOperation"
+            resultType="com.example.netdisk.entity.Folder">
+        select * from folder where username = #{username} and id in
+        <foreach collection="list" item="id" index="index" open="(" close=")" separator="," nullable="false">
+            #{id}
+        </foreach>
+    </select>
+    <select id="selectManyVo" parameterType="com.example.netdisk.entity.dto.BatchOperation"
+            resultType="com.example.netdisk.entity.vo.FolderVo">
+        select * from folder where username = #{username} and id in
+        <foreach collection="list" item="id" index="index" open="(" close=")" separator="," nullable="false">
+            #{id}
+        </foreach>
+    </select>
+    <select id="selectByPath" resultType="com.example.netdisk.entity.Folder">
+        select *
+        from folder
+        where username = #{username}
+          and `path` = #{path}
+    </select>
+    <select id="selectByPathVo" resultType="com.example.netdisk.entity.vo.FolderVo">
+        select *
+        from folder
+        where username = #{username}
+          and `path` = #{path}
+    </select>
+    <select id="selectByName" parameterType="java.lang.String" resultType="com.example.netdisk.entity.Folder">
+        select *
+        from folder
+        where username = #{username}
+        and `path` = #{fatherPath}
+        <if test="name!=null and name!=''">
+            and `name` = #{name}
+        </if>
+    </select>
+    <select id="selectLikePath" parameterType="com.example.netdisk.entity.Folder"
+            resultType="com.example.netdisk.entity.Folder">
+        <bind name="pattern" value=" path + '%'"/>
+        select * from folder
+        where username = #{username} and `path` like #{pattern}
+    </select>
+
+
+</mapper>

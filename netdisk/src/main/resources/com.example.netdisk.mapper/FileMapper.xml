@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.netdisk.mapper.FileMapper">
+
+    <insert id="insert" parameterType="com.example.netdisk.entity.File">
+        insert into file (id, username, name, detail, size, type, path, update_time, expire_time, logic)
+        values (#{id}, #{username}, #{name}, #{detail}, #{size}, #{type}, #{path}, now(), null, 1)
+    </insert>
+    <insert id="insertMany" parameterType="java.util.List">
+        insert into file (id, username, name, detail, size, type, path, update_time, expire_time, logic) values
+        <foreach collection="list" item="file" index="index" separator=",">
+            (#{file.id},#{file.username},#{file.name},#{file.detail},#{file.size},#{file.type},#{file.path},now(),null,1)
+        </foreach>
+    </insert>
+    <delete id="delete" parameterType="long">
+        delete
+        from file
+        where id = #{fileId};
+    </delete>
+    <select id="selectOne" resultType="com.example.netdisk.entity.File">
+        select *
+        from file
+        where id = #{fileId}
+    </select>
+    <select id="selectByPath" parameterType="com.example.netdisk.entity.dto.BatchOperation"
+            resultType="com.example.netdisk.entity.File">
+        select *
+        from file
+        where username = #{username}
+          and `path` = #{path}
+        <if test="field!=null and field!='' and (order=='asc' or order=='desc')">
+            order by ${field} ${order}
+        </if>
+
+    </select>
+    <select id="selectByPathVo" parameterType="com.example.netdisk.entity.dto.BatchOperation"
+            resultType="com.example.netdisk.entity.vo.FileVo">
+        select *
+        from file
+        where username = #{username}
+        and `path` = #{path}
+        <if test="field!=null and field!='' and (order=='asc' or order=='desc')">
+            order by ${field} ${order}
+        </if>
+
+    </select>
+    <select id="selectMany" parameterType="com.example.netdisk.entity.dto.BatchOperation"
+            resultType="com.example.netdisk.entity.File">
+        select * from file
+        where username = #{username} and id in
+        <foreach collection="list" item="id" index="index" open="(" close=")" separator="," nullable="false">
+            #{id}
+        </foreach>
+    </select>
+    <select id="selectManyVo" parameterType="com.example.netdisk.entity.dto.BatchOperation"
+            resultType="com.example.netdisk.entity.vo.FileVo">
+        select * from file
+        where username = #{username} and id in
+        <foreach collection="list" item="id" index="index" open="(" close=")" separator="," nullable="false">
+            #{id}
+        </foreach>
+    </select>
+    <select id="selectLikePath" parameterType="com.example.netdisk.entity.File" resultType="com.example.netdisk.entity.File">
+        <bind name="pattern" value=" path + '%'" />
+        select * from file
+        where username = #{username} and `path` like #{pattern}
+    </select>
+
+    <update id="update" parameterType="com.example.netdisk.entity.File">
+        <if test="id!=null">
+            update file
+            <set>
+                <if test="detail!=null">
+                    detail = #{detail},
+                </if>
+                <if test="name!=null">
+                    name = #{name},
+                </if>
+                <if test="size!=null">
+                    size = #{size},
+                </if>
+                <if test="type!=null">
+                    type = #{type},
+                </if>
+                <if test="path!=null">
+                    path = #{path},
+                </if>
+                <if test="expireTime!=null">
+                    expire_time = #{expireTime},
+                </if>
+                <if test="logic!=null">
+                    logic = #{logic},
+                </if>
+                update_time = now()
+            </set>
+            where id = #{id} and username = #{username}
+        </if>
+    </update>
+    <update id="updateMany" parameterType="com.example.netdisk.entity.dto.BatchOperation">
+        update file
+        set ${setColumn} = #{value}
+        where username = #{username}
+        and
+            <if test="list!=null and list.size()>0">
+                ${whereColumn} in
+                <foreach collection="list" item="id" index="index" open="(" close=")" separator="," nullable="false">
+                    #{id}
+                </foreach>
+            </if>
+            <if test="list==null or list.size()==0">
+                0
+            </if>
+    </update>
+
+
+</mapper>
