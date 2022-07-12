@@ -218,7 +218,7 @@ public class FileServiceImpl implements FileService {
             absolutePath = absolutePath.replace('/', '\\');
             fileDirPath = absolutePath.substring(0,absolutePath.lastIndexOf('\\')+1);
         }else {
-            absolutePath.substring(0, absolutePath.lastIndexOf('/') + 1);
+            fileDirPath = absolutePath.substring(0, absolutePath.lastIndexOf('/') + 1);
         }
         // 如果文件夹不存在则进行创建
         java.io.File fileDir = new java.io.File(fileDirPath);

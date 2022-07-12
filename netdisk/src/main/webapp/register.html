@@ -2,6 +2,10 @@
 <html>
 <head>
     <meta charset="utf-8">
+    <!--禁用缓存-->
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="Cache" content="no-cache">
 
     <title>用户注册</title>
     <link rel="icon" href="img/favicon.ico">
@@ -33,7 +37,7 @@
     <div id="login">
         <h3 style="margin-left: 150px">个人网盘用户注册</h3>
         <el-form ref="form" :model="form" label-width="100px">
-            <el-tooltip content="由数字、英文字母或者下划线组成（4-18位）" placement="right">
+            <el-tooltip content="由数字、英文字母或者下划线组成（3-18位）" placement="right">
                 <el-form-item label="用户名">
                     <el-input v-model="form.username" minlength="4" maxlength="18" tabindex="1"></el-input>
                 </el-form-item>
@@ -45,7 +49,7 @@
                 </el-form-item>
             </el-tooltip>
 
-            <el-tooltip content="由数字和英文字母组成（4-18位）" placement="right">
+            <el-tooltip content="由数字和英文字母组成（3-18位）" placement="right">
                 <el-form-item label="密码" prop="pass">
                     <el-input type="password" v-model="form.password" autocomplete="new-password"
                               minlength="4" maxlength="18" tabindex="3" show-password></el-input>
@@ -164,11 +168,13 @@
                                 clearInterval(this.mail_cool_down_timer)
                             }
                         }, 1000);
+                    }else {
+                        this.errorInfo(res.msg)
                     }
                 })
             },
             checkUsername(s) {
-                var pattern = /^\w{4,18}$/
+                var pattern = /^\w{3,18}$/
                 if (!pattern.test(s)){
                     this.errorInfo("用户名格式错误")
                     return false
@@ -176,7 +182,7 @@
                 return true
             },
             checkPassword(s) {
-                var pattern = /^[A-Za-z0-9]{4,18}$/
+                var pattern = /^[A-Za-z0-9]{3,18}$/
                 if (!pattern.test(s)){
                     this.errorInfo("密码格式错误")
                     return false

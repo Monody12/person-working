@@ -94,7 +94,7 @@ netdisk:
   upload:
     # 大文件阈值 30MB
     big-size: 31457280
-    storage-root: C:\upload\
+    storage-root: /Users/monody/Desktop/upload/
 
 userservice:
   ribbon:

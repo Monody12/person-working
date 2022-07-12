@@ -15,6 +15,7 @@
         <module>redis-api</module>
         <module>netdisk</module>
         <module>online-judge</module>
+        <module>online-doc</module>
     </modules>
 
     <parent>

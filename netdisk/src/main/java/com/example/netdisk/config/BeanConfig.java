@@ -1,5 +1,6 @@
 package com.example.netdisk.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.codec.binary.Base64;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,6 +16,9 @@ public class BeanConfig {
     public Base64 base64(){
         return new Base64();
     }
-
+    @Bean
+    ObjectMapper objectMapper(){
+        return new ObjectMapper();
+    }
 
 }

@@ -1,6 +1,7 @@
 package com.example.netdisk.config;
 
 import com.github.xiaoymin.swaggerbootstrapui.annotations.EnableSwaggerBootstrapUI;
+import com.google.common.base.Predicates;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import springfox.documentation.builders.ApiInfoBuilder;
@@ -23,12 +24,14 @@ public class SwaggerConfig {
     // 文档地址 http://localhost:6500/swagger-ui.html   默认的
     // 文档地址     使用美化后的 http://localhost:6500/doc.html
 
+    // 扫描多个包
     @Bean
     public Docket createRestApi() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo())
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.example.netdisk.controller"))
+                .apis(Predicates.or(RequestHandlerSelectors.basePackage("com.example.netdisk.controller"),
+                        RequestHandlerSelectors.basePackage("com.example.netdisk.onlinedoc.controller")) )
                 .paths(PathSelectors.any())
                 .build();
     }
