@@ -1,4 +1,4 @@
-package com.example.netdisk.onlinedoc.entity;
+package com.example.netdisk.onlineeditor.entity;
 
 import lombok.Data;
 import org.springframework.data.annotation.Id;
@@ -25,6 +25,13 @@ public class OnlineDoc {
     LocalDateTime updateTime;
 
     public OnlineDoc() {
+    }
+
+    public OnlineDoc(String id,String title,String content,LocalDateTime updateTime){
+        this.id = id;
+        this.title = title;
+        this.content = content;
+        this.updateTime = updateTime;
     }
 
     public OnlineDoc(String id,String username,String title) {

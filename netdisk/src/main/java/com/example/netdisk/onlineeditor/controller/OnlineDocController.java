@@ -1,9 +1,9 @@
-package com.example.netdisk.onlinedoc.controller;
+package com.example.netdisk.onlineeditor.controller;
 
 import com.example.netdisk.entity.response.BaseResponse;
 import com.example.netdisk.entity.response.BaseResponseEntity;
-import com.example.netdisk.onlinedoc.entity.OnlineDoc;
-import com.example.netdisk.onlinedoc.service.OnlineDocService;
+import com.example.netdisk.onlineeditor.entity.OnlineDoc;
+import com.example.netdisk.onlineeditor.service.OnlineDocService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -48,7 +48,7 @@ public class OnlineDocController {
         int i = onlineDocService.deleteOnlineDoc(username, id);
         if (i == 1)
             return BaseResponse.success();
-        return BaseResponse.fail();
+        return BaseResponse.fail("文档不存在");
     }
 
     /**
@@ -59,7 +59,7 @@ public class OnlineDocController {
         int i = onlineDocService.updateOnlineDocTitle( id, title);
         if (i == 1)
             return BaseResponse.success();
-        return BaseResponse.fail();
+        return BaseResponse.fail("文档标题未更新");
     }
 
     /**
@@ -70,7 +70,7 @@ public class OnlineDocController {
         int i = onlineDocService.updateOnlineDocContent(id, content);
         if (i == 1)
             return BaseResponse.success();
-        return BaseResponse.fail();
+        return BaseResponse.fail("文档内容未更新");
     }
 
     /**
@@ -78,9 +78,9 @@ public class OnlineDocController {
      */
     @GetMapping("/get")
     public BaseResponseEntity getOnlineDoc(String username, String id) {
-        OnlineDoc onlineDoc = onlineDocService.getOnlineDoc(username, id);
+        OnlineDoc onlineDoc = onlineDocService.getOnlineDoc(id);
         Map<String, Object> map = new HashMap<>(1);
-        map.put("onlineDoc", onlineDoc);
+        map.put("onlinedoc", onlineDoc);
         return BaseResponse.success(map);
     }
 

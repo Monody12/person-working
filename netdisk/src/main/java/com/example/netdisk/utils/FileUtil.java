@@ -2,10 +2,9 @@ package com.example.netdisk.utils;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.io.FileUtils;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
@@ -20,6 +19,8 @@ import java.util.Set;
 public class FileUtil {
 
     private static Map<String, Set<String>> map;
+
+    private static final boolean isWindows = System.getProperty("os.name").toLowerCase().contains("windows");
 
     static {
         map = new HashMap<>();
@@ -207,6 +208,87 @@ public class FileUtil {
      */
     public static String toMD5(String target) {
         return DigestUtils.md5Hex(target);
+    }
+
+
+    public static String readFile(String filePath) {
+        filePath = pathConvert(filePath);
+        StringBuilder sb = new StringBuilder();
+        try {
+            File file = new File(filePath);
+            if (file.exists()) {
+                BufferedReader br = new BufferedReader(new FileReader(file));
+                String line;
+                while ((line = br.readLine()) != null) {
+                    sb.append(line);
+                    // 追加换行符
+                    sb.append("\n");
+                }
+                br.close();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return sb.toString();
+    }
+
+    public static void writeFile(String srcPath,String content) throws IOException {
+        srcPath = pathConvert(srcPath);
+        File file = new File(srcPath);
+        if (!file.exists()){
+            boolean newFile = file.createNewFile();
+            if (!newFile){
+                throw new IOException("创建文件失败！");
+            }
+        }
+        // 向目标文件写入字符串
+        FileWriter fw = new FileWriter(file);
+        fw.write(content);
+        fw.close();
+    }
+
+    public static boolean deleteFile(String srcPath) {
+        srcPath=pathConvert(srcPath);
+        File file = new File(srcPath);
+        if (file.exists()) {
+            return file.delete();
+        }
+        return false;
+    }
+
+    public static boolean moveFile(String srcPath, String destPath) {
+        srcPath = pathConvert(srcPath);
+        destPath = pathConvert(destPath);
+        File srcFile = new File(srcPath);
+        File destFile = new File(destPath);
+        if (srcFile.exists()) {
+            return srcFile.renameTo(destFile);
+        }
+        return false;
+    }
+
+    public static boolean copyFile(String srcPath, String destPath) {
+        srcPath = pathConvert(srcPath);
+        destPath = pathConvert(destPath);
+        File srcFile = new File(srcPath);
+        File destFile = new File(destPath);
+        if (srcFile.exists()) {
+            try {
+                FileUtils.copyFile(srcFile, destFile);
+                return true;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return false;
+    }
+
+    public static String pathConvert(String path){
+        // 如果操作系统为Windows，则需要将路径中的 '/' 替换为 '\'
+        if(isWindows){
+            return path.replace("/", "\\");
+        }
+        return path;
     }
 
     public static void main(String[] args) {

@@ -1,7 +1,6 @@
 package com.example.netdisk.service.impl;
 
 import com.example.netdisk.entity.File;
-import com.example.netdisk.entity.Folder;
 import com.example.netdisk.entity.dto.BatchOperation;
 import com.example.netdisk.entity.po.FileCnt;
 import com.example.netdisk.entity.po.FileInfo;
@@ -22,7 +21,6 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.FileWriter;
@@ -52,7 +50,9 @@ public class FileServiceImpl implements FileService {
     @Autowired
     FolderService folderService;
     @Value("${netdisk.upload.storage-root}")
-    private String storageRoot;
+    private String UPLOAD_STORAGE_ROOT;
+    @Value("${netdisk.edit.storage-root}")
+    private String EDIT_STORAGE_ROOT;
 
     @Override
     public int insert(File file) {
@@ -127,8 +127,6 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    // TODO bug修复以后删除回滚
-    @Transactional(rollbackFor = Exception.class)
     public int delete(long fileId) throws IOException {
         int i = fileMapper.delete(fileId);
         if (i == 0) {
@@ -139,6 +137,14 @@ public class FileServiceImpl implements FileService {
         Query queryId = Query.query(Criteria.where("_id").is(String.valueOf(fileId)));
         // 查询出当前文件的真实路径
         FileInfo fileInfo = mongoTemplate.findOne(queryId, FileInfo.class);
+        // 如果文件类型是编辑类型，直接删除 MongoDB 上的扩展信息和文件即可
+        if ("edit".equals(fileInfo.getType())){
+            // 删除mongo
+            mongoTemplate.remove(queryId,FileInfo.class);
+            // 删除文件
+            FileUtil.deleteFile(EDIT_STORAGE_ROOT+fileInfo.getRealPath());
+            return 1;
+        }
         // 查询出逻辑引用该文件的数量
         Query queryPath = Query.query(Criteria.where("_id").is(fileInfo.getRealPath()));
         FileCnt fileCnt = mongoTemplate.findOne(queryPath, FileCnt.class);
@@ -200,7 +206,7 @@ public class FileServiceImpl implements FileService {
         if (fileInfo==null){
             throw new NullPointerException("找不到该文件");
         }
-        return storageRoot + fileInfo.getRealPath();
+        return UPLOAD_STORAGE_ROOT + fileInfo.getRealPath();
     }
 
     @Override
@@ -211,15 +217,8 @@ public class FileServiceImpl implements FileService {
             realPath = fileService.generateRealPath();
         }
         // 计算出写磁盘的绝对路径
-        String absolutePath = storageRoot + realPath;
-        String fileDirPath = null;
-        if (isWindows){
-            // 如果操作系统为Windows 则需要将 / 替换为 \
-            absolutePath = absolutePath.replace('/', '\\');
-            fileDirPath = absolutePath.substring(0,absolutePath.lastIndexOf('\\')+1);
-        }else {
-            fileDirPath = absolutePath.substring(0, absolutePath.lastIndexOf('/') + 1);
-        }
+        String absolutePath = FileUtil.pathConvert(UPLOAD_STORAGE_ROOT + realPath);
+        String fileDirPath =FileUtil.pathConvert( absolutePath.substring(0, absolutePath.lastIndexOf('/') + 1));
         // 如果文件夹不存在则进行创建
         java.io.File fileDir = new java.io.File(fileDirPath);
         if (!fileDir.exists()) {
@@ -247,14 +246,14 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public void deleteHardDisk(String realPath) throws IOException {
-        Path path = Paths.get(storageRoot+realPath);
+        Path path = Paths.get(UPLOAD_STORAGE_ROOT +realPath);
         Files.delete(path);
     }
 
     @Override
     public String readHardDisk(String realPath) throws IOException {
         // 计算出写磁盘的绝对路径
-        String absolutePath = storageRoot + realPath;
+        String absolutePath = UPLOAD_STORAGE_ROOT + realPath;
         Path path = Paths.get(absolutePath);
         Scanner scanner = new Scanner(path);
         // 文件内容

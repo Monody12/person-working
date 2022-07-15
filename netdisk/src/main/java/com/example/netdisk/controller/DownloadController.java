@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,7 +36,9 @@ public class DownloadController {
     @Autowired
     FileService fileService;
     @Value("${netdisk.upload.storage-root}")
-    private String storageRoot;
+    private String UPLOAD_STORAGE_ROOT;
+    @Value("${netdisk.edit.storage-root}")
+    private String EDIT_STORAGE_ROOT;
     @Autowired
     ObjectMapper objectMapper;
 
@@ -45,7 +46,7 @@ public class DownloadController {
     private void fileChunkDownload(@PathVariable long fileId, Boolean isDownload,
                                    @ApiIgnore HttpServletRequest request,
                                    @ApiIgnore HttpServletResponse response) throws IOException {
-        if (isDownload==null){
+        if (isDownload == null) {
             isDownload = false;
         }
         com.example.netdisk.entity.File downloadFile = fileService.queryById(fileId);
@@ -64,7 +65,12 @@ public class DownloadController {
         }
         // 感谢 https://blog.csdn.net/qq_41389354/article/details/105043312
         // 下载文件的绝对路径
-        String filePath = storageRoot + fileInfo.getRealPath();
+        String filePath;
+        if ("upload".equals(fileInfo.getType())) {
+            filePath = UPLOAD_STORAGE_ROOT + fileInfo.getRealPath();
+        } else {
+            filePath = EDIT_STORAGE_ROOT + fileInfo.getRealPath();
+        }
         log.debug("文件下载的绝对路径为：{}", filePath);
         String range = request.getHeader("Range");
         log.info("current request rang:" + range);
@@ -306,7 +312,7 @@ public class DownloadController {
             return;
         }
         // 下载文件的绝对路径
-        String path = storageRoot + fileInfo.getRealPath();
+        String path = UPLOAD_STORAGE_ROOT + fileInfo.getRealPath();
         // 下载文件的文件名
         String name = downloadFile.getName();
         if (isDownload != null && isDownload) {

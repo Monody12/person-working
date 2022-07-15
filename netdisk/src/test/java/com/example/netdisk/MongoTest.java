@@ -1,15 +1,13 @@
 package com.example.netdisk;
 
 import com.example.netdisk.entity.po.FileInfo;
-import com.example.netdisk.onlinedoc.entity.OnlineDoc;
-import com.example.netdisk.onlinedoc.service.OnlineDocService;
+import com.example.netdisk.onlineeditor.entity.OnlineDoc;
+import com.example.netdisk.onlineeditor.service.OnlineDocService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 
 import java.util.ArrayList;
 import java.util.Collection;

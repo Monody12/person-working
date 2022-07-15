@@ -1,7 +1,7 @@
-package com.example.netdisk.onlinedoc.service.impl;
+package com.example.netdisk.onlineeditor.service.impl;
 
-import com.example.netdisk.onlinedoc.entity.OnlineDoc;
-import com.example.netdisk.onlinedoc.service.OnlineDocService;
+import com.example.netdisk.onlineeditor.entity.OnlineDoc;
+import com.example.netdisk.onlineeditor.service.OnlineDocService;
 import com.example.netdisk.utils.SnowflakeIdWorker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -11,7 +11,6 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -32,27 +31,27 @@ public class OnlineDocServiceImpl implements OnlineDocService {
 
     @Override
     public int deleteOnlineDoc(String username, String id) {
-        Query query = Query.query(Criteria.where("id").is(id).and("username").is(username));
-        return (int) mongoTemplate.remove(query).getDeletedCount();
+        Query query = Query.query(Criteria.where("_id").is(id).and("username").is(username));
+        return (int) mongoTemplate.remove(query, OnlineDoc.class).getDeletedCount();
     }
 
     @Override
     public int updateOnlineDocTitle(String id, String title) {
-        Query query = Query.query(Criteria.where("id").is(id));
+        Query query = Query.query(Criteria.where("_id").is(id));
         Update update = new Update().set("title", title).set("updateTime", LocalDateTime.now());
         return (int) mongoTemplate.updateFirst(query, update, OnlineDoc.class).getModifiedCount();
     }
 
     @Override
     public int updateOnlineDocContent( String id, String content) {
-        Query query = Query.query(Criteria.where("id").is(id));
+        Query query = Query.query(Criteria.where("_id").is(id));
         Update update = new Update().set("content", content).set("updateTime", LocalDateTime.now());
         return (int) mongoTemplate.updateFirst(query, update, OnlineDoc.class).getModifiedCount();
     }
 
     @Override
-    public OnlineDoc getOnlineDoc(String username, String id) {
-        return mongoTemplate.findOne(Query.query(Criteria.where("id").is(id).and("username").is(username)), OnlineDoc.class);
+    public OnlineDoc getOnlineDoc(String id) {
+        return mongoTemplate.findOne(Query.query(Criteria.where("_id").is(id)), OnlineDoc.class);
     }
 
     @Override

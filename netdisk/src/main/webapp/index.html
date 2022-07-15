@@ -3,10 +3,10 @@
 <head>
     <meta charset="utf-8">
     <!--禁用缓存-->
-<!--    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>-->
-<!--    <meta http-equiv="Pragma" content="no-cache"/>-->
-<!--    <meta http-equiv="Expires" content="0"/>-->
-<!--    <meta http-equiv="Expires" content="0">-->
+    <!--    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>-->
+    <!--    <meta http-equiv="Pragma" content="no-cache"/>-->
+    <!--    <meta http-equiv="Expires" content="0"/>-->
+    <!--    <meta http-equiv="Expires" content="0">-->
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Cache-control" content="no-cache">
     <meta http-equiv="Cache" content="no-cache">
@@ -21,9 +21,10 @@
     <!--	<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">-->
     <!--	<script src="https://unpkg.com/element-ui/lib/index.js"></script>-->
     <style lang="scss" scoped>
-        *{
-            font-family: "微软雅黑",serif;
+        * {
+            font-family: "微软雅黑", serif;
         }
+
         .table-wrapper {
             height: calc(100% - 60px);
         }
@@ -98,9 +99,9 @@
         <el-button v-if="mode == 'owner'" @click="newFolder" slot="append" icon="el-icon-folder-add">
             {{menu_visible.file_menu_word[menu_visible.file_menu].new}}
         </el-button>
-<!--        <el-button v-if="mode == 'owner'" @click="openFolderViewer('copy')" slot="append" icon="el-icon-document-copy">-->
-<!--            {{menu_visible.file_menu_word[menu_visible.file_menu].copy}}-->
-<!--        </el-button>-->
+        <!--        <el-button v-if="mode == 'owner'" @click="openFolderViewer('copy')" slot="append" icon="el-icon-document-copy">-->
+        <!--            {{menu_visible.file_menu_word[menu_visible.file_menu].copy}}-->
+        <!--        </el-button>-->
         <el-button v-if="mode == 'owner'" @click="openFolderViewer('move')" slot="append" icon="el-icon-paperclip">
             {{menu_visible.file_menu_word[menu_visible.file_menu].move}}
         </el-button>
@@ -221,6 +222,11 @@
             <el-form-item label="文件描述" :label-width="formLabelWidth">
                 <el-input v-model="form2.detail" autocomplete="off"></el-input>
             </el-form-item>
+            <el-form-item v-if="form2.small" label="在线编辑" :label-width="formLabelWidth">
+                <el-button type="primary" @click="openOnlineEditor(form2.id)"
+                           plain>打开在线文件编辑器
+                </el-button>
+            </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
             <el-button @click="dialogFormVisible = false">取 消</el-button>
@@ -336,8 +342,8 @@
             </el-button>
 
         </el-input>
-        <el-table :data="folderView.data"  :row-key="row => { return row.id }">
-            <el-table-column property="name" label="文件夹名称" >
+        <el-table :data="folderView.data" :row-key="row => { return row.id }">
+            <el-table-column property="name" label="文件夹名称">
                 <template slot-scope="scope">
                     <!-- 鼠标点击名称进入该文件夹 -->
                     <div class="fileClick" @click="openFolder(scope.row.path+ scope.row.name + '/') ">
@@ -345,7 +351,7 @@
                     </div>
                 </template>
             </el-table-column>
-            <el-table-column property="updateTime" label="修改日期" ></el-table-column>
+            <el-table-column property="updateTime" label="修改日期"></el-table-column>
         </el-table>
         <div slot="footer" class="dialog-footer">
             <el-button @click="dialogTableVisible5 = false">取 消</el-button>
@@ -397,7 +403,8 @@
                 id: "",
                 data: [],
                 detail: '文件描述',
-                isfolder: false
+                isfolder: false,
+                small: false, // 是否为小文件可以编辑
             },
             //文件信息编辑窗口
             dialogTableVisible: false,
@@ -495,12 +502,12 @@
                 }]
             },
             // 文件夹预览
-            dialogTableVisible5 : false,
+            dialogTableVisible5: false,
             folderView: {
                 mode: '', // copy or move
                 data: [],
-                folderList:[],  // 用户选中的文件夹id
-                fileList:[], // 用户选中的文件id
+                folderList: [],  // 用户选中的文件夹id
+                fileList: [], // 用户选中的文件id
                 path: '',
                 loading: false
             },
@@ -627,22 +634,22 @@
             axiosGetFiles(params) {
                 return axios.get("./file/findByPath", params)
             },
-            axiosMoveFolder(){
+            axiosMoveFolder() {
                 var params = new URLSearchParams()
                 params.append('username', this.username)
-                params.append('path',this.folderView.path)
+                params.append('path', this.folderView.path)
                 var list = this.folderView.folderList
-                for(let item of list){
+                for (let item of list) {
                     params.append('folderId', item.id)
                 }
                 return axios.post("./folder/move", params)
             },
-            axiosMoveFile(){
+            axiosMoveFile() {
                 var params = new URLSearchParams()
                 params.append('username', this.username)
-                params.append('path',this.folderView.path)
+                params.append('path', this.folderView.path)
                 var list = this.folderView.fileList
-                for(let item of list){
+                for (let item of list) {
                     params.append('fileId', item.id)
                 }
                 return axios.post("./file/move", params)
@@ -920,6 +927,7 @@
                 this.form2.name = row.name
                 this.form2.isfolder = row.isfolder
                 this.form2.refObject = row
+                this.form2.small = row.small
             },
             previewFile(index, row) {
                 var type = row.type
@@ -981,6 +989,9 @@
                 }
                 // 格式化文件大小
                 for (let data of this.tableData) {
+                    console.log(data.type != 'folder',data.size)
+                    if (data.type != 'folder')
+                        data['small'] = data.size <= 51200;
                     if (data.size != undefined)
                         data.size = this.formatSize(data.size)
                 }
@@ -1302,7 +1313,7 @@
                                 message: '新建文件夹成功'
                             });
                             this.getInfo()
-                            if (view==true){
+                            if (view == true) {
                                 this.openFolder(this.folderView.path)
                             }
                         } else {
@@ -1315,6 +1326,12 @@
                 }).catch(() => {
 
                 });
+            },
+            // 打开在线编辑
+            openOnlineEditor(id){
+                console.log(id)
+                localStorage.setItem("edit_file_id",id)
+                window.open("./online_doc.html","_blank")
             },
             dateFormat(fmt, date) {
                 let ret;
@@ -1382,15 +1399,17 @@
                     tmp = JSON.parse(tmp)
                     if (this.Personalize.descending)  //反转
                         this.reverseJSON(tmp)
-                    for (var i = 0; i < tmp.length; ++i)
+
+                    for (var i = 0; i < tmp.length; ++i) {
                         tmp[i].size = this.formatSize(tmp[i].size)
+                    }
                     this.tableData = tmp
                 })
             },
             // 打开文件夹浏览框
-            openFolderViewer(mode){
+            openFolderViewer(mode) {
                 var list = this.multipleSelection
-                if (list.length===0){
+                if (list.length === 0) {
                     this.$message.error('未选择任何文件夹或文件')
                     return
                 }
@@ -1399,7 +1418,7 @@
                 this.dialogTableVisible5 = true
                 this.folderView.mode = mode
             },
-            move_copy(){
+            move_copy() {
                 console.log('move_copy')
                 // 将用户选择的内容进行分类
                 var list = this.multipleSelection
@@ -1412,65 +1431,61 @@
                 }
                 this.folderView.folderList = folderList
                 this.folderView.fileList = fileList
-                if (this.folderView.mode === 'move'){
+                if (this.folderView.mode === 'move') {
                     this.move()
-                }else {
+                } else {
                     this.copy()
                 }
             },
             // 移动文件
-            move(){
+            move() {
                 console.log('move')
                 var that = this
                 axios.all([that.axiosMoveFile(), that.axiosMoveFolder()]).then(axios.spread(function (moveFile, moveFolder) {
                     moveFile = moveFile.data
                     moveFolder = moveFolder.data
-                    console.log("moveFile: " , moveFile)
-                    console.log("moveFolder: " , moveFolder)
                     var fileCnt = moveFile.resData.fileCnt + moveFolder.resData.fileCnt
                     var folderCnt = moveFolder.resData.folderCnt
-                    if(moveFile.code==200&&moveFolder.code==200) {
+                    if (moveFile.code == 200 && moveFolder.code == 200) {
                         that.$message.success(fileCnt + "个文件移动成功，" + folderCnt + "个文件夹移动成功")
                         that.dialogTableVisible5 = false
                         that.getInfo()
-                    }
-                    else if (moveFile.code!=200){
+                    } else if (moveFile.code != 200) {
                         that.$message.error(moveFile.msg)
-                    }
-                    else if (moveFolder.code!=200){
+                    } else if (moveFolder.code != 200) {
                         that.$message.error(moveFolder.msg)
                     }
                 }))
             },
             // 复制文件
-            copy(){
+            copy() {
                 console.log('copy')
                 var that = this
             },
             // 预览打开文件夹 （查看文件夹中的文件）
-            openFolder(path){
+            openFolder(path) {
                 this.folderView.path = path
                 axios.get("./folder/queryByPath?username=" + this.username + "&path=" + path).then(res => {
                     var info = res.data
-                    if (info.code==200){
+                    if (info.code == 200) {
                         info = info.resData.fileInfo.list
-                        console.log("预览打开文件夹列表",info)
+                        console.log("预览打开文件夹列表", info)
                         this.folderView.data = new Array()
                         for (var i = 0; i < info.length; ++i) {
                             // 格式化日期
                             info[i].updateTime = this.dateFormat('YYYY-mm-dd HH:MM', new Date(info[i].updateTime))
                             this.folderView.data.push(info[i])
                         }
-                    }else {
+                    } else {
                         this.$message.error(info.msg)
                     }
                 })
             },
             // 预览打开文件夹 回退上一层
-            upPathView(){
-                var path = this.folderView.path.substring(0, this.folderView.path.length-1)
+            upPathView() {
+                var path = this.folderView.path.substring(0, this.folderView.path.length - 1)
                 var index = path.lastIndexOf("/")
-                if (index == -1){
+                if (index == -1) {
                     this.$message.error("已经是根目录")
                     return
                 }
@@ -1478,7 +1493,7 @@
                 this.openFolder(this.folderView.path)
             },
             // 打开在线文档页面
-            online_doc(){
+            online_doc() {
                 window.open("online_doc.html", "_blank")
             },
             reverseJSON(theJSON) {

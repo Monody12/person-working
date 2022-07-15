@@ -31,7 +31,7 @@ public class SwaggerConfig {
                 .apiInfo(apiInfo())
                 .select()
                 .apis(Predicates.or(RequestHandlerSelectors.basePackage("com.example.netdisk.controller"),
-                        RequestHandlerSelectors.basePackage("com.example.netdisk.onlinedoc.controller")) )
+                        RequestHandlerSelectors.basePackage("com.example.netdisk.onlineeditor.controller")) )
                 .paths(PathSelectors.any())
                 .build();
     }

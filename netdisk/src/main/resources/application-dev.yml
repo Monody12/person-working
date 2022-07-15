@@ -95,6 +95,11 @@ netdisk:
     # 大文件阈值 30MB
     big-size: 31457280
     storage-root: /Users/monody/Desktop/upload/
+  edit:
+    # 编辑文件的阈值 50KB
+    big-size: 51200
+    storage-root: /Users/monody/Desktop/edit/
+
 
 userservice:
   ribbon:

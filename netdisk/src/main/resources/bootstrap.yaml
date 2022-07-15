@@ -2,7 +2,7 @@ spring:
   application:
     name: userservice # 服务名称
   profiles:
-    active: dev #开发环境，这里是dev
+    active: prod #开发环境，这里是dev
   cloud:
     nacos:
       server-addr: 192.144.232.94:8848 # Nacos地址

@@ -1,6 +1,6 @@
-package com.example.netdisk.onlinedoc.service;
+package com.example.netdisk.onlineeditor.service;
 
-import com.example.netdisk.onlinedoc.entity.OnlineDoc;
+import com.example.netdisk.onlineeditor.entity.OnlineDoc;
 
 import java.util.List;
 
@@ -44,11 +44,10 @@ public interface OnlineDocService {
 
     /**
      * 根据id查询在线文档
-     * @param username
      * @param id
      * @return
      */
-    OnlineDoc getOnlineDoc(String username,String id);
+    OnlineDoc getOnlineDoc(String id);
 
     /**
      * 查询用户的在线文档摘要（不含内容）

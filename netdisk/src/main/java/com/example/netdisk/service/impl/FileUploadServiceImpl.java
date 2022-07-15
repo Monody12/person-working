@@ -64,6 +64,7 @@ public class FileUploadServiceImpl implements FileUploadService {
 
     @Override
     public void saveFileInfo(FileInfo fileInfo) {
+        fileInfo.setType("upload");
         mongoTemplate.insert(fileInfo);
         Query query = Query.query(Criteria.where("_id").is(fileInfo.getRealPath()));
         Update update = new Update();
