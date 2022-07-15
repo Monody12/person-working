@@ -292,7 +292,9 @@ public class FileUtil {
     }
 
     public static void main(String[] args) {
-        String ext = getExt("poptxt.");
-        System.out.println(ext);
+        String srcPath = "/Users/monody/Desktop/a.txt";
+        String descPath = "/Users/monody/Desktop/ttt/copy.txt";
+        boolean copyFile = FileUtil.copyFile(srcPath, descPath);
+        System.out.println(copyFile);
     }
 }

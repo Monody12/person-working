@@ -218,7 +218,8 @@ public class FileServiceImpl implements FileService {
         }
         // 计算出写磁盘的绝对路径
         String absolutePath = FileUtil.pathConvert(UPLOAD_STORAGE_ROOT + realPath);
-        String fileDirPath =FileUtil.pathConvert( absolutePath.substring(0, absolutePath.lastIndexOf('/') + 1));
+        // 根据不同的系统选择不同的文件分隔符
+        String fileDirPath =FileUtil.pathConvert( absolutePath.substring(0, absolutePath.lastIndexOf(java.io.File.separator) + 1));
         // 如果文件夹不存在则进行创建
         java.io.File fileDir = new java.io.File(fileDirPath);
         if (!fileDir.exists()) {

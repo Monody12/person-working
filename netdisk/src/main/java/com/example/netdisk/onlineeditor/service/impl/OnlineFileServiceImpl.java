@@ -6,6 +6,7 @@ import com.example.netdisk.onlineeditor.service.OnlineFileService;
 import com.example.netdisk.service.FileService;
 import com.example.netdisk.utils.FileUtil;
 import com.example.netdisk.utils.UUIDUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -25,6 +26,7 @@ import java.time.LocalDateTime;
  * Version 1.0
  */
 @Service
+@Slf4j
 public class OnlineFileServiceImpl implements OnlineFileService {
 
     @Autowired
@@ -63,6 +65,7 @@ public class OnlineFileServiceImpl implements OnlineFileService {
 
     /**
      * 用户想要编辑文件
+     *
      * @param fileId
      * @return
      */
@@ -81,6 +84,8 @@ public class OnlineFileServiceImpl implements OnlineFileService {
         if ("upload".equals(fileInfo.getType())) {
             // 转为可编辑文件
             convertToEdit(fileInfo);
+            // 将转换后的新路径查询出来
+            fileInfo = mongoTemplate.findById(fileId, FileInfo.class);
         }
         // 读取文件内容然后返回
         return FileUtil.readFile(EDIT_STORAGE_ROOT + fileInfo.getRealPath());
@@ -100,14 +105,16 @@ public class OnlineFileServiceImpl implements OnlineFileService {
         // 生成目的文件的绝对路径
         String dscPath = createEditDirAbsolutePath() + UUIDUtil.get();
         // 移动文件
-        if (isMove){
+        if (isMove) {
             // 在磁盘中移动文件
-            FileUtil.moveFile(UPLOAD_STORAGE_ROOT+fileInfo.getRealPath(),EDIT_STORAGE_ROOT+ dscPath);
+            FileUtil.moveFile(UPLOAD_STORAGE_ROOT + fileInfo.getRealPath(), EDIT_STORAGE_ROOT + dscPath);
+            log.debug("移动 srcPath: {}  destPath: {}", UPLOAD_STORAGE_ROOT + fileInfo.getRealPath(), EDIT_STORAGE_ROOT + dscPath);
             // 从MongoDB中删除计数器
             mongoTemplate.remove(new Query(Criteria.where("_id").is(fileInfo.getRealPath())), FileCnt.class);
         } else {
             // 在磁盘中复制文件
-            FileUtil.copyFile(UPLOAD_STORAGE_ROOT+fileInfo.getRealPath(), dscPath);
+            FileUtil.copyFile(UPLOAD_STORAGE_ROOT + fileInfo.getRealPath(), EDIT_STORAGE_ROOT + dscPath);
+            log.debug("复制 srcPath: {}  destPath: {}", UPLOAD_STORAGE_ROOT + fileInfo.getRealPath(), EDIT_STORAGE_ROOT + dscPath);
             // mongoDB中计数器引用值-1
             mongoTemplate.updateFirst(new Query(Criteria.where("_id").is(fileInfo.getRealPath())), new Update().inc("num", -1), FileCnt.class);
         }
@@ -119,7 +126,8 @@ public class OnlineFileServiceImpl implements OnlineFileService {
     }
 
     /**
-     * 创建出来的是相对路径
+     * 创建出来的是相对路径（不含EDIT_STORAGE_ROOT）
+     * 示例：2022/7/15
      * 根据当前时间日期生成一个路径（以 / 分隔）
      * 该路径位于编辑文件目录下
      * 该路径对应的文件夹也会被创建（创建时若是Windows系统，则也是 \ 符号，在读盘的时候会做统一转换）
@@ -130,9 +138,9 @@ public class OnlineFileServiceImpl implements OnlineFileService {
     public String createEditDirAbsolutePath() {
         LocalDateTime now = LocalDateTime.now();
         String dirPath = now.getYear() + "/" + now.getMonthValue() + "/" + now.getDayOfMonth() + "/";
-        File dir = new File(EDIT_STORAGE_ROOT+ FileUtil.pathConvert(dirPath));
+        File dir = new File(EDIT_STORAGE_ROOT + FileUtil.pathConvert(dirPath));
         boolean mkdirs = dir.exists() || dir.mkdirs();
-        if (!mkdirs){
+        if (!mkdirs) {
             throw new RuntimeException("创建文件夹失败");
         }
         return dirPath;
