@@ -76,7 +76,7 @@ public class OnlineDocController {
     /**
      * 根据id查询在线文档
      */
-    @GetMapping("/get")
+    @GetMapping("/get/content")
     public BaseResponseEntity getOnlineDoc(String username, String id) {
         OnlineDoc onlineDoc = onlineDocService.getOnlineDoc(id);
         Map<String, Object> map = new HashMap<>(1);
