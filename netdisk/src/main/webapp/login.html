@@ -96,7 +96,7 @@
                     params.append("username", this.form.username)
                     params.append("password", this.form.password)
                     axios.post("./userservice/login/", params).then(res => {
-                        console.log(res)
+                        console.log("登录信息：", res.data)
                         var info = res.data
                         // 登录成功
                         if (info.code == 200) {
@@ -104,9 +104,10 @@
                         } else {
                             this.errorInfo = info.msg
                         }
+                    }).catch(err => {
+                        console.error(err)
+                        this.errorInfo = err.toString()
                     })
-
-
                 }
             },
             checkUsername(s) {

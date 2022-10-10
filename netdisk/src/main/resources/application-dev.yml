@@ -8,30 +8,36 @@ spring:
 
   cloud:
     nacos:
-      server-addr: 192.144.232.94:8848
+      server-addr: 127.0.0.1:8848
       discovery:
         service: netdisk
         cluster-name: localhost集群
   data:
     mongodb:
-      #uri连接
-      uri: mongodb://netdisk:myaskhfas4541ds9897djlakfd4dfhfdshin123@localhost:27017/netdisk
+      host: 127.0.0.1
+      port: 27017
+      username: javaUser
+      password: password
+      database: netdisk
+      authentication-database: admin
+
+
 
   datasource:
-    url: jdbc:mysql://192.144.232.94:3306/person_working_netdisk?useAffectedRows=true&useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=GMT%2B8
-    username: person_working_netdisk
-    password: ksdhfoihsdgdsgf34DHSGBJasf45
+    url: jdbc:mysql://127.0.0.1:3306/person_working_netdisk?useAffectedRows=true&useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=GMT%2B8
+    username: root
+    password: 12345678
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   devtools:
     restart:
       enabled: false
   rabbitmq:
-    host: 192.144.232.94
+    host: 127.0.0.1
     port: 5672
-    username: rabbitmq_admin
-    password: hjasioh444I$HDnksdn^*(5HF5DI
-    
+    username: guest
+    password: guest
+
 
 
   jackson:

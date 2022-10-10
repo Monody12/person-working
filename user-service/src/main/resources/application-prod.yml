@@ -20,8 +20,8 @@ spring:
       FAIL_ON_EMPTY_BEANS: false
   datasource:
     url: jdbc:mysql://127.0.0.1:3306/person_working_user?useAffectedRows=true&useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=GMT%2B8
-    username: root
-    password: 12345678
+    username: person_working_user
+    password: ksdhfoihi84fsd4GUJDHSGBJasf45
     driver-class-name: com.mysql.cj.jdbc.Driver
 mybatis:
   type-aliases-package: com.example.user.entity
