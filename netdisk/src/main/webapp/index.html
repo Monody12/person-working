@@ -40,6 +40,9 @@
             color: #1890ff;
         }
 
+        .fileLinkButton{
+          font-size: 32px;
+        }
     </style>
 </head>
 <body>
@@ -92,6 +95,9 @@
         </el-button>
         <el-button @click="batchDownload" slot="append" icon="el-icon-download">
             {{menu_visible.file_menu_word[menu_visible.file_menu].download}}
+        </el-button>
+        <el-button @click="fileLink" slot="append" icon="el-icon-paperclip">
+            {{menu_visible.file_menu_word[menu_visible.file_menu].fileLink}}
         </el-button>
         <el-button v-if="mode == 'owner'" @click="dialogFormVisible4 = true" slot="append" icon="el-icon-s-promotion">
             {{menu_visible.file_menu_word[menu_visible.file_menu].share}}
@@ -359,6 +365,14 @@
         </div>
     </el-dialog>
 
+    <!-- 获取外链 -->
+    <el-dialog title="获取外链" :visible.sync="dialogTableVisible6">
+        <div style="display: flex;justify-content: space-around">
+            <button class="fileLinkButton" @click="fileLinkConfirm(false)">预览</button>
+            <button class="fileLinkButton" @click="fileLinkConfirm(true)">下载</button>
+        </div>
+    </el-dialog>
+
 </div>
 </body>
 <script>
@@ -476,6 +490,7 @@
                 file_menu_word: [{
                     'upload': '',
                     'download': '',
+                    'fileLink': '',
                     'share': '',
                     'new': '',
                     'delete': '',
@@ -488,6 +503,7 @@
                 }, {
                     'upload': '上传',
                     'download': '下载',
+                    'fileLink': '外链',
                     'share': '分享',
                     'new': '新建',
                     "copy": "复制",
@@ -511,6 +527,10 @@
                 path: '',
                 loading: false
             },
+            // 获取外链
+            dialogTableVisible6: false,
+            // 外链下载模式 false 为预览模式，true为下载模式
+            fileLinkDownload: false
         },
         created: function () {
             this.tableData = new Array()
@@ -1160,31 +1180,17 @@
                         if (info.expireTime != null) {
                             s += '请在' + this.dateFormat('YYYY-mm-dd HH:MM:SS', new Date(info.expireTime)) + '前查看。'
                         }
-
+                        // 询问用户是否要复制到剪切板
                         this.$confirm(s, '分享成功', {
                             confirmButtonText: '复制到剪切板',
                             cancelButtonText: '确定',
                             type: 'success'
                         }).then(() => {
-                            var transfer = document.createElement('textarea');  //textarea支持换行
-                            document.body.appendChild(transfer);
-                            transfer.value = s;  // 这里表示想要复制的内容
-                            transfer.focus();
-                            transfer.select();
-                            if (document.execCommand('copy')) {
-                                document.execCommand('copy');
-                            }
-                            transfer.blur();
-                            // console.log('复制成功');
-                            document.body.removeChild(transfer);
-
-                            this.$message({
-                                type: 'success',
-                                message: '复制成功!'
-                            });
+                            this.copyInPasteboard(s)
                         }).catch(e => {
                             console.warn('复制失败', e)
                         });
+                        this.dialogFormVisible4 = false
                     } else {
                         this.$message({
                             type: 'error',
@@ -1334,6 +1340,31 @@
                 console.log(id)
                 localStorage.setItem("edit_file_id", id)
                 window.open("./online_doc.html", "_blank")
+            },
+            // 显示外链
+            fileLink(){
+                // 询问下载模式还是预览模式
+                this.dialogTableVisible6 = true
+            },
+            // 外链展示方式选择
+            fileLinkConfirm(isDownload){
+                this.dialogTableVisible6 = false
+                var s = ""
+                for (var file of this.multipleSelection){
+                    if (!file.isfolder){
+                        s += window.location.origin + "/netdisk/download/" + file.id + "?isDownload=" + isDownload + "\n"
+                    }
+                }
+                // 询问是否复制到剪贴板
+                this.$confirm(''+s, '外链', {
+                    confirmButtonText: '复制到剪贴板',
+                    cancelButtonText: '取消',
+                }).then(() => {
+                    this.copyInPasteboard(s)
+                }).catch(() => {
+
+                });
+
             },
             dateFormat(fmt, date) {
                 let ret;
@@ -1521,7 +1552,27 @@
                 this.resetHeight().then(res => {
                     this.tableH = document.documentElement.clientHeight - 200
                 })
+            },
+            // 复制到用户到剪贴板
+            copyInPasteboard(s){
+                var transfer = document.createElement('textarea');  //textarea支持换行
+                document.body.appendChild(transfer);
+                transfer.value = s;  // 这里表示想要复制的内容
+                transfer.focus();
+                transfer.select();
+                if (document.execCommand('copy')) {
+                    document.execCommand('copy');
+                }
+                transfer.blur();
+                // console.log('复制成功');
+                document.body.removeChild(transfer);
+
+                this.$message({
+                    type: 'success',
+                    message: '复制成功!'
+                });
             }
+
         }
     })
 
