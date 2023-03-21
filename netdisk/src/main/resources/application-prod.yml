@@ -8,17 +8,17 @@ spring:
 
   cloud:
     nacos:
-      server-addr: 127.0.0.1:8848
+      server-addr: vm.local:8848
       discovery:
         service: netdisk
-        cluster-name: localhost集群
+        cluster-name: localhost
   data:
     mongodb:
       #uri连接
       uri: mongodb://localhost:27017/netdisk
 
   datasource:
-    url: jdbc:mysql://127.0.0.1:3306/person_working_netdisk?useAffectedRows=true&useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=GMT%2B8
+    url: jdbc:mysql://vm.local:3306/person_working_netdisk?useAffectedRows=true&useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=GMT%2B8
     username: person_working_netdisk
     password: ksdhfoihsdgdsgf34DHSGBJasf45
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -27,7 +27,7 @@ spring:
     restart:
       enabled: false
   rabbitmq:
-    host: 127.0.0.1
+    host: vm.local
     port: 5672
     username: rabbitmq_admin
     password: hjasioh444I$HDnksdn^*(5HF5DI

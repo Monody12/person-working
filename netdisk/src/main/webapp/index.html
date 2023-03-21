@@ -21,34 +21,34 @@
     <!--	<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">-->
     <!--	<script src="https://unpkg.com/element-ui/lib/index.js"></script>-->
     <style lang="scss" scoped>
-        * {
-            font-family: "微软雅黑", serif;
-        }
+      * {
+        font-family: "微软雅黑", serif;
+      }
 
-        .table-wrapper {
-            height: calc(100% - 60px);
-        }
+      .table-wrapper {
+        height: calc(100% - 60px);
+      }
 
-        /*
-            用于鼠标点击文件名进行预览
-         */
-        .fileClick {
-            cursor: pointer;
-        }
+      /*
+          用于鼠标点击文件名进行预览
+       */
+      .fileClick {
+        cursor: pointer;
+      }
 
-        .fileClick:hover {
-            color: #1890ff;
-        }
+      .fileClick:hover {
+        color: #1890ff;
+      }
 
-        .fileLinkButton{
-          font-size: 32px;
-        }
+      .fileLinkButton {
+        font-size: 32px;
+      }
     </style>
 </head>
 <body>
 <div id="app">
     <hgroup>
-        <h2 style="display: inline-block">用户名：{{username}} 昵称：{{userinfo.nickname}} 的个人网盘</h2>
+        <h2 style="display: inline-block">用户名：{{ username }} 昵称：{{ userinfo.nickname }} 的个人网盘</h2>
 
         <div style="float: right">
 
@@ -58,8 +58,10 @@
 
                 </el-avatar>
                 <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item command="a">{{menu_visible.personalize?'隐藏个性化设置':'显示个性化设置'}}</el-dropdown-item>
-                    <el-dropdown-item command="b">{{menu_visible.file_menu?'简略显示文件菜单功能':'详细显示文件菜单功能'}}
+                    <el-dropdown-item command="a">{{ menu_visible.personalize ? '隐藏个性化设置' : '显示个性化设置' }}
+                    </el-dropdown-item>
+                    <el-dropdown-item command="b">
+                        {{ menu_visible.file_menu ? '简略显示文件菜单功能' : '详细显示文件菜单功能' }}
                     </el-dropdown-item>
                     <el-dropdown-item>螺蛳粉</el-dropdown-item>
                     <el-dropdown-item>双皮奶</el-dropdown-item>
@@ -79,7 +81,8 @@
         </el-descriptions-item>
         <el-descriptions-item v-if="mode=='share'" label="分享模式工具">
             <el-button-group>
-                <el-button type="primary" plain @click="$message.warning('功能暂未开放')" icon="el-icon-document-copy">拷贝
+                <el-button type="primary" plain @click="$message.warning('功能暂未开放')" icon="el-icon-document-copy">
+                    拷贝
                 </el-button>
                 <el-button type="primary" plain @click="returnIndex" icon="el-icon-s-home">返回</el-button>
             </el-button-group>
@@ -91,43 +94,43 @@
     <el-input placeholder="请输入内容" v-model="path">
         <template slot="prepend">当前文件目录</template>
         <el-button v-if="mode == 'owner'" @click="uploadFile" slot="append" icon="el-icon-upload2">
-            {{menu_visible.file_menu_word[menu_visible.file_menu].upload}}
+            {{ menu_visible.file_menu_word[menu_visible.file_menu].upload }}
         </el-button>
         <el-button @click="batchDownload" slot="append" icon="el-icon-download">
-            {{menu_visible.file_menu_word[menu_visible.file_menu].download}}
+            {{ menu_visible.file_menu_word[menu_visible.file_menu].download }}
         </el-button>
         <el-button @click="fileLink" slot="append" icon="el-icon-link">
-            {{menu_visible.file_menu_word[menu_visible.file_menu].fileLink}}
+            {{ menu_visible.file_menu_word[menu_visible.file_menu].fileLink }}
         </el-button>
         <el-button v-if="mode == 'owner'" @click="dialogFormVisible4 = true" slot="append" icon="el-icon-s-promotion">
-            {{menu_visible.file_menu_word[menu_visible.file_menu].share}}
+            {{ menu_visible.file_menu_word[menu_visible.file_menu].share }}
         </el-button>
         <el-button v-if="mode == 'owner'" @click="newFolder" slot="append" icon="el-icon-folder-add">
-            {{menu_visible.file_menu_word[menu_visible.file_menu].new}}
+            {{ menu_visible.file_menu_word[menu_visible.file_menu].new }}
         </el-button>
         <!--        <el-button v-if="mode == 'owner'" @click="openFolderViewer('copy')" slot="append" icon="el-icon-document-copy">-->
         <!--            {{menu_visible.file_menu_word[menu_visible.file_menu].copy}}-->
         <!--        </el-button>-->
         <el-button v-if="mode == 'owner'" @click="openFolderViewer('move')" slot="append" icon="el-icon-paperclip">
-            {{menu_visible.file_menu_word[menu_visible.file_menu].move}}
+            {{ menu_visible.file_menu_word[menu_visible.file_menu].move }}
         </el-button>
         <el-button v-if="mode == 'owner'" @click="deleteFilesConfirm" slot="append" icon="el-icon-delete">
-            {{menu_visible.file_menu_word[menu_visible.file_menu].delete}}
+            {{ menu_visible.file_menu_word[menu_visible.file_menu].delete }}
         </el-button>
         <el-button @click="refresh" slot="append" icon="el-icon-refresh-right">
-            {{menu_visible.file_menu_word[menu_visible.file_menu].refresh}}
+            {{ menu_visible.file_menu_word[menu_visible.file_menu].refresh }}
         </el-button>
         <el-button v-if="mode == 'owner'" @click="homePath" slot="append" icon="el-icon-s-home">
-            {{menu_visible.file_menu_word[menu_visible.file_menu].home}}
+            {{ menu_visible.file_menu_word[menu_visible.file_menu].home }}
         </el-button>
         <el-button @click="backPath" slot="append" icon="el-icon-back">
-            {{menu_visible.file_menu_word[menu_visible.file_menu].back}}
+            {{ menu_visible.file_menu_word[menu_visible.file_menu].back }}
         </el-button>
         <el-button @click="upPath" slot="append" icon="el-icon-top">
-            {{menu_visible.file_menu_word[menu_visible.file_menu].up}}
+            {{ menu_visible.file_menu_word[menu_visible.file_menu].up }}
         </el-button>
         <el-button v-if="mode == 'owner'" @click="enterPath" slot="append" icon="el-icon-right">
-            {{menu_visible.file_menu_word[menu_visible.file_menu].enter}}
+            {{ menu_visible.file_menu_word[menu_visible.file_menu].enter }}
         </el-button>
     </el-input>
     <div class="table-wrapper" ref="tableWrapper">
@@ -210,7 +213,7 @@
                     width="150">
                 <template slot-scope="scope">
                     <el-button type="text" @click="editFileInfo(scope.$index, scope.row)" icon="el-icon-edit">
-                        {{menu_visible.file_menu_word[menu_visible.file_menu].edit}}
+                        {{ menu_visible.file_menu_word[menu_visible.file_menu].edit }}
                     </el-button>
                 </template>
             </el-table-column>
@@ -341,10 +344,10 @@
         <el-input placeholder="请输入内容" v-model="folderView.path">
             <template slot="prepend">目标文件夹位置</template>
             <el-button v-if="mode == 'owner'" @click="newFolder(true)" slot="append" icon="el-icon-folder-add">
-                {{menu_visible.file_menu_word[menu_visible.file_menu].new}}
+                {{ menu_visible.file_menu_word[menu_visible.file_menu].new }}
             </el-button>
             <el-button @click="upPathView" slot="append" icon="el-icon-top">
-                {{menu_visible.file_menu_word[menu_visible.file_menu].up}}
+                {{ menu_visible.file_menu_word[menu_visible.file_menu].up }}
             </el-button>
 
         </el-input>
@@ -469,7 +472,7 @@
             path_stack: [],
             folderId_stack: [],
             copyValue: undefined, // 复制到剪切板用的变量
-            // 可预览的文件类型
+            // 可直接预览的文件类型
             previewable: [
                 // 图片
                 'jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp', 'ico',
@@ -478,7 +481,14 @@
                 // 视频
                 'mp4',
                 // 文档
-                'pdf', 'md', 'txt'
+                'pdf', 'md', 'txt',
+                // 代码文件
+                'c', 'cpp', 'java', 'py', 'js', 'html', 'css', 'php', 'go', 'sh', 'bat', 'sql', 'xml', 'json', 'yml', 'yaml', 'ini',
+                'conf', 'log', 'properties', 'gitignore',
+            ],
+            // 需要调用Google文档打开的Office文件类型
+            previewable_office: [
+                'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx'
             ],
             // 菜单显示状态
             menu_visible: {
@@ -951,20 +961,34 @@
                 this.form2.refObject = row
                 this.form2.small = row.small
             },
+            // 预览文件
             previewFile(index, row) {
                 var type = row.type
                 var name = row.name
                 // 获取文件扩展名
                 var ext = name.substr(name.lastIndexOf('.') + 1)
                 console.log('文件类型：', type, "文件扩展名：", ext)
+                if (this.previewable_office.includes(ext)) {
+                    // 弹窗询问用户是否使用Google文档打开
+                    this.$confirm('该文档需使用Google文档进行在线预览，需要外网环境', '提示', {
+                        confirmButtonText: '预览',
+                        cancelButtonText: '下载',
+                        type: 'warning'
+                    }).then(() => {
+                        window.open('https://docs.google.com/viewer?url=' + window.origin + "/netdisk/download/" + row.id)
+                    }).catch(() => {
+                        window.open('download/' + row.id + '?isDownload=false')
+                    })
+                }
                 // 如果要预览的文件类型不在支持范围内，则转到下载页面
-                if (!this.previewable.includes(ext) && type != 'code' && type != 'configuration') {
+                else if (!this.previewable.includes(ext) && type != 'code' && type != 'configuration') {
                     this.$message.error('不支持预览的文件类型，正在跳转到下载页面')
                     setTimeout(() => {
                         this.downloadFile(index, row)
                     }, 2000)
-                } else
+                } else {
                     window.open('download/' + row.id + '?isDownload=false')
+                }
             },
             downloadFile(index, row) {
                 window.open('download/' + row.id + '?isDownload=true')
@@ -1342,21 +1366,21 @@
                 window.open("./online_doc.html", "_blank")
             },
             // 显示外链
-            fileLink(){
+            fileLink() {
                 // 询问下载模式还是预览模式
                 this.dialogTableVisible6 = true
             },
             // 外链展示方式选择
-            fileLinkConfirm(isDownload){
+            fileLinkConfirm(isDownload) {
                 this.dialogTableVisible6 = false
                 var s = ""
-                for (var file of this.multipleSelection){
-                    if (!file.isfolder){
+                for (var file of this.multipleSelection) {
+                    if (!file.isfolder) {
                         s += window.location.origin + "/netdisk/download/" + file.id + "?isDownload=" + isDownload + "\n"
                     }
                 }
                 // 询问是否复制到剪贴板
-                this.$confirm(''+s, '外链', {
+                this.$confirm('' + s, '外链', {
                     confirmButtonText: '复制到剪贴板',
                     cancelButtonText: '取消',
                 }).then(() => {
@@ -1554,7 +1578,7 @@
                 })
             },
             // 复制到用户到剪贴板
-            copyInPasteboard(s){
+            copyInPasteboard(s) {
                 var transfer = document.createElement('textarea');  //textarea支持换行
                 document.body.appendChild(transfer);
                 transfer.value = s;  // 这里表示想要复制的内容
