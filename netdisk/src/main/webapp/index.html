@@ -966,7 +966,7 @@
                 var type = row.type
                 var name = row.name
                 // 获取文件扩展名
-                var ext = name.substr(name.lastIndexOf('.') + 1)
+                var ext = name.substr(name.lastIndexOf('.') + 1).toLowerCase()
                 console.log('文件类型：', type, "文件扩展名：", ext)
                 if (this.previewable_office.includes(ext)) {
                     // 弹窗询问用户是否使用Google文档打开
