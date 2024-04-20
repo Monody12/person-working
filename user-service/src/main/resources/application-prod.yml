@@ -42,7 +42,7 @@ mail:
     mailbox:
       account: person-working@qq.com
       nickname: Person Working 用户服务
-      secret: czghbgzdigtccifj
+      secret: czghbgzdigtcciff
   verification-code:
 #    template: 尊敬的 %s (%s) 您好，欢迎使用Person Working个人网盘服务。您的验证码是 %d ，请在 %d 分钟内完成账户验证。如不是您本人操作请忽略，谢谢。
     template: 尊敬的 %s (%s) 本次服务验证码是 %d 。请在 %d 分钟内完成验证。

@@ -98,12 +98,12 @@ netdisk:
     share-file-routing-key: share_file.
 
   upload:
-    # 大文件阈值 30MB
-    big-size: 31457280
+    # 大文件阈值 3000MB
+    big-size: 3145728000
     storage-root: /Users/monody/Desktop/upload/
   edit:
-    # 编辑文件的阈值 50KB
-    big-size: 51200
+    # 编辑文件的阈值 5000KB
+    big-size: 5120000
     storage-root: /Users/monody/Desktop/edit/
 
 
