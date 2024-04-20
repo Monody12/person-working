@@ -58,12 +58,14 @@ public class WebController {
     public ModelAndView file(PagePath pagePath, @ApiIgnore HttpServletRequest request,@ApiIgnore HttpServletResponse response) {
         // 测试能否获取到cookie
         Cookie[] cookies = request.getCookies();
-        for (Cookie cookie : cookies) {
-            if ("check".equals(cookie.getName())){
-                log.debug("获取到UserChecker: {}",new String(base64.decode(cookie.getValue().getBytes(StandardCharsets.UTF_8))));
-                continue;
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("check".equals(cookie.getName())) {
+                    log.debug("获取到UserChecker: {}", new String(base64.decode(cookie.getValue().getBytes(StandardCharsets.UTF_8))));
+                    continue;
+                }
+                log.debug("获取到cookie: {}, value: {}", cookie.getName(), cookie.getValue());
             }
-            log.debug("获取到cookie: {}, value: {}",cookie.getName(),cookie.getValue());
         }
 
         ModelAndView mvc = new ModelAndView();
