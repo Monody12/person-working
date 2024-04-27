@@ -73,6 +73,8 @@ docker run -d --name nacos -p 8848:8848 -e MODE=standalone nacos/nacos-server:1.
 1. 打jar包
 
    编译环境 JDK 1.8，Maven 3.6
+        
+   已知问题：在JDK17环境下，运行netdisk-1.0-SNAPSHOT.jar会导致移动文件功能报错，使用JDK1.8则不会。
 
    在父项目中 mvn clean package
    
@@ -86,6 +88,9 @@ docker run -d --name nacos -p 8848:8848 -e MODE=standalone nacos/nacos-server:1.
 
 若使用默认的配置的ip：vm.local，则需要修改hosts文件，将vm.local指向服务器ip
 
+### 访问服务网盘项目
+
+浏览器访问 http://127.0.0.1:8080/netdisk/index.html
 
 
 
