@@ -135,10 +135,15 @@
     </el-input>
     <div class="table-wrapper" ref="tableWrapper">
         <el-table
-                :data="tableData.filter(data => !search || data.name.toLowerCase().includes(search.toLowerCase()) || data.username.toLowerCase().includes(search.toLowerCase())
-            || data.detail.toLowerCase().includes(search.toLowerCase())  ||data.type.toLowerCase().includes(search.toLowerCase()))"
+                :data="tableData.filter(data => {
+    const searchLower = search ? search.toLowerCase() : '';
+    return !search ||
+           (data.name && data.name.toLowerCase().includes(searchLower)) ||
+           (data.username && data.username.toLowerCase().includes(searchLower)) ||
+           (data.detail && data.detail.toLowerCase().includes(searchLower)) ||
+           (data.type && data.type.toLowerCase().includes(searchLower));
+                })"
                 ref="multipleTable"
-                :data="tableData"
                 tooltip-effect="dark"
                 style="width: 100%"
                 @selection-change="handleSelectionChange"
@@ -160,7 +165,7 @@
                     prop="name"
                     label="文件名"
                     sortable
-                    width="500">
+                    width="350">
                 <template slot-scope="scope">
                     <div class="fileClick" @click="openFile(scope.row)">
                         {{ scope.row.name }}
