@@ -15,8 +15,8 @@ public class SpringMvcConfig {
     public CommonsMultipartResolver commonsMultipartResolver(){
         CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
         multipartResolver.setDefaultEncoding("UTF-8");
-        // 最多上传1024MB
-        multipartResolver.setMaxUploadSize(1073741824L);
+        // 最多上传10GB
+        multipartResolver.setMaxUploadSize(10737418240L);
         return multipartResolver;
     }
 
