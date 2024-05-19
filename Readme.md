@@ -70,6 +70,8 @@ docker run -d --name nacos -p 8848:8848 -e MODE=standalone nacos/nacos-server:1.
 
 ### 四、部署服务
 
+#### 使用jar包部署
+
 1. 打jar包
 
    编译环境 JDK 1.8，Maven 3.6
@@ -88,9 +90,90 @@ docker run -d --name nacos -p 8848:8848 -e MODE=standalone nacos/nacos-server:1.
 
 若使用默认的配置的ip：vm.local，则需要修改hosts文件，将vm.local指向服务器ip
 
-### 访问服务网盘项目
 
-浏览器访问 http://127.0.0.1:8080/netdisk/index.html
+#### 使用docker部署
+
+1. maven编译项目打jar包
+
+2. 对三个模块进行docker镜像构建
+   
+   例如命令： docker build -t netdisk-gateway gateway/
+
+   1. gateway
+   2. user-service
+   3. netdisk-service
+
+3. 运行容器
+
+   编写run或compose文件请
+
+   1. 添加vm.local的hosts映射
+   2. 注意放行端口
+   3. 配置数据卷或挂载文件夹，避免数据丢失
+   
+#### 使用Jenkins部署
+
+pipeline script 示例
+
+```groovy
+
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git 'https://github.com/Monody12/person-working.git'
+            }
+        }
+        
+        stage('Maven Build') {
+            steps {
+                withMaven(maven: 'Maven') {
+                    sh 'mvn clean package -DskipTests'
+                }
+            }
+        }
+        
+        stage('Build Docker Images') {
+            steps {
+                script {
+                    sh 'docker build -t netdisk-gateway gateway/'
+                    sh 'docker build -t netdisk-user-service user-service/'
+                    sh 'docker build -t netdisk-main netdisk/'
+                }
+            }
+        }
+        
+        stage('Deploy') {
+            steps {
+                script {
+                    // 停止并删除已有的容器（如果存在）
+                    sh 'docker stop gateway || true'
+                    sh 'docker stop user-service || true'
+                    sh 'docker stop netdisk || true'
+                    sh 'docker rm gateway || true'
+                    sh 'docker rm user-service || true'
+                    sh 'docker rm netdisk || true'
+                    
+                    // 删除旧的镜像
+                    sh 'docker image prune -f'
+
+                    // 运行新的容器
+                    sh 'docker run -d --name gateway -p 8080:8080 --add-host=vm.local:192.168.0.89 netdisk-gateway'
+                    sh 'docker run -d --name user-service -p 8001:8001 --add-host=vm.local:192.168.0.89 -v /root/netdisk/upload:/Users/monody/Desktop/upload netdisk-user-service'
+                    sh 'docker run -d --name netdisk -p 8002:8002 --add-host=vm.local:192.168.0.89 netdisk-main'
+                }
+            }
+        }
+    }
+}
 
 
+```
 
+### 五、访问服务网盘项目
+
+开发环境使用以下地址，生产环境请使用服务器ip和自定的端口
+
+浏览器访问 http://localhost:8080/netdisk/index.html
